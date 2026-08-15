@@ -1,0 +1,29 @@
+{
+  "name": "@org/web",
+  "version": "0.0.1",
+  "private": true,
+  "nx": {
+    "targets": {
+      "dev": {
+        "options": {
+          "args": ["--port=4200"]
+        }
+      },
+      "start": {
+        "options": {
+          "args": ["--port=4200"]
+        }
+      },
+      "serve-static": {
+        "options": {
+          "args": ["--port=4200"]
+        }
+      }
+    }
+  },
+  "dependencies": {
+    "next": "~16.1.6",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  }
+}

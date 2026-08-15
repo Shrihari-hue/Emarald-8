@@ -32,6 +32,9 @@ jobs:
 
       - run: npm ci
 
+      # Browsers for the Playwright e2e projects (web-e2e, marketing-e2e)
+      - run: npx playwright install --with-deps
+
       # Prepend any command with "nx record --" to record its logs to Nx Cloud
       - run: npx nx record -- npx nx format:check --base="remotes/origin/main"
       - run: npx nx run-many -t lint test build typecheck e2e

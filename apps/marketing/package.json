@@ -6,17 +6,23 @@
     "targets": {
       "dev": {
         "options": {
-          "args": ["--port=4300"]
+          "args": [
+            "--port=4300"
+          ]
         }
       },
       "start": {
         "options": {
-          "args": ["--port=4300"]
+          "args": [
+            "--port=4300"
+          ]
         }
       },
       "serve-static": {
         "options": {
-          "args": ["--port=4300"]
+          "args": [
+            "--port=4300"
+          ]
         }
       }
     }

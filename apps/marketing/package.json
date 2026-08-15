@@ -1,0 +1,29 @@
+{
+  "name": "@org/marketing",
+  "version": "0.0.1",
+  "private": true,
+  "nx": {
+    "targets": {
+      "dev": {
+        "options": {
+          "args": ["--port=4300"]
+        }
+      },
+      "start": {
+        "options": {
+          "args": ["--port=4300"]
+        }
+      },
+      "serve-static": {
+        "options": {
+          "args": ["--port=4300"]
+        }
+      }
+    }
+  },
+  "dependencies": {
+    "next": "~16.1.6",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  }
+}

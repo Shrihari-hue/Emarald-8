@@ -14,14 +14,22 @@
     "prisma:studio": "nx run @org/models:prisma -c studio"
   },
   "nx": {
-    "tags": ["scope:models", "type:lib"],
+    "tags": [
+      "scope:models",
+      "type:lib"
+    ],
     "targets": {
       "build": {
-        "dependsOn": ["prisma-generate"],
+        "dependsOn": [
+          "prisma-generate"
+        ],
         "executor": "nx:noop"
       },
       "typecheck": {
-        "dependsOn": ["prisma-generate", "^typecheck"]
+        "dependsOn": [
+          "prisma-generate",
+          "^typecheck"
+        ]
       },
       "prisma": {
         "executor": "nx:run-commands",

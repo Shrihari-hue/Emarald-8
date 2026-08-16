@@ -4,6 +4,12 @@
       "type": "stdio",
       "command": "npx",
       "args": ["nx", "mcp"]
+    },
+    "Prisma": {
+      "url": "https://mcp.prisma.io/mcp"
+    },
+    "better-auth": {
+      "url": "https://mcp.better-auth.com/mcp"
     }
   }
 }

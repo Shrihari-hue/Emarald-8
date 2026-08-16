@@ -1,11 +1,12 @@
 # Emarald-8
 
-Nx workspace (`pnpm@11.22.0`): Nest API, Next apps, shared Prisma models.
+Nx workspace (`pnpm@11.22.0`): Nest API, BullMQ worker, Next apps, shared Prisma models.
 
 | App / lib | Package                | Default URL                                                   |
 | --------- | ---------------------- | ------------------------------------------------------------- |
 | Backend   | `@org/backend`         | http://localhost:8000/api                                     |
 | Auth      | Better Auth on the API | http://localhost:8000/api/auth/ok                             |
+| Worker    | `@org/worker`          | BullMQ process (Redis), no HTTP port                          |
 | Web       | `@org/web`             | http://localhost:3000 (`/api/auth/*` rewrites to the backend) |
 | Marketing | `@org/marketing`       | http://localhost:3001                                         |
 | Models    | `@org/models`          | Prisma schema in `packages/models/prisma`                     |
@@ -28,6 +29,7 @@ openssl rand -base64 32
 `.env` is gitignored. Required keys are in `.env.example`.
 
 Postgres must be reachable at `DATABASE_URL` (default `postgresql://postgres:postgres@localhost:5432/emarald`).
+Redis must be reachable at `REDIS_URL` (default `redis://localhost:6379`) for the worker.
 
 ## Prisma (`@org/models`)
 
@@ -58,6 +60,10 @@ pnpm nx serve @org/backend
 pnpm nx serve @org/backend --configuration=development
 pnpm nx serve @org/backend --configuration=production
 
+pnpm nx serve @org/worker
+pnpm nx serve @org/worker --configuration=development
+pnpm nx serve @org/worker --configuration=production
+
 pnpm nx dev @org/web
 pnpm nx start @org/web
 pnpm nx serve-static @org/web
@@ -79,6 +85,7 @@ curl http://localhost:8000/api/auth/ok
 
 ```sh
 pnpm nx build @org/backend
+pnpm nx build @org/worker
 pnpm nx build @org/web
 pnpm nx build @org/marketing
 pnpm nx run-many -t build

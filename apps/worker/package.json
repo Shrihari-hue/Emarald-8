@@ -1,0 +1,137 @@
+{
+  "name": "@org/worker",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "nx": {
+    "tags": [
+      "scope:worker",
+      "type:app"
+    ],
+    "targets": {
+      "build": {
+        "dependsOn": [
+          "^build"
+        ],
+        "executor": "@nx/esbuild:esbuild",
+        "outputs": [
+          "{options.outputPath}"
+        ],
+        "options": {
+          "outputPath": "apps/worker/dist",
+          "main": "apps/worker/src/main.ts",
+          "tsConfig": "apps/worker/tsconfig.app.json",
+          "assets": [
+            "apps/worker/src/assets",
+            {
+              "input": "apps/worker",
+              "glob": "package.json",
+              "output": "."
+            }
+          ],
+          "platform": "node",
+          "bundle": true,
+          "format": [
+            "esm"
+          ],
+          "esbuildConfig": "apps/worker/esbuild.config.cjs"
+        },
+        "configurations": {
+          "development": {
+            "minify": false,
+            "sourcemap": true
+          },
+          "production": {
+            "minify": true,
+            "sourcemap": false,
+            "esbuildOptions": {
+              "keepNames": true
+            }
+          }
+        }
+      },
+      "typecheck": {
+        "dependsOn": [
+          "^typecheck"
+        ],
+        "executor": "nx:run-commands",
+        "options": {
+          "command": "tsc --noEmit -p tsconfig.app.json",
+          "cwd": "apps/worker"
+        }
+      },
+      "prune-lockfile": {
+        "dependsOn": [
+          "build"
+        ],
+        "cache": true,
+        "executor": "@nx/js:prune-lockfile",
+        "outputs": [
+          "{workspaceRoot}/apps/worker/dist/package.json",
+          "{workspaceRoot}/apps/worker/dist/pnpm-lock.yaml"
+        ],
+        "options": {
+          "buildTarget": "build"
+        }
+      },
+      "copy-workspace-modules": {
+        "dependsOn": [
+          "build"
+        ],
+        "cache": true,
+        "outputs": [
+          "{workspaceRoot}/apps/worker/dist/workspace_modules"
+        ],
+        "executor": "@nx/js:copy-workspace-modules",
+        "options": {
+          "buildTarget": "build"
+        }
+      },
+      "prune": {
+        "dependsOn": [
+          "prune-lockfile",
+          "copy-workspace-modules"
+        ],
+        "executor": "nx:noop"
+      },
+      "serve": {
+        "continuous": true,
+        "executor": "@nx/js:node",
+        "defaultConfiguration": "development",
+        "dependsOn": [
+          "build"
+        ],
+        "options": {
+          "buildTarget": "@org/worker:build",
+          "runBuildTargetDependencies": false
+        },
+        "configurations": {
+          "development": {
+            "buildTarget": "@org/worker:build:development"
+          },
+          "production": {
+            "buildTarget": "@org/worker:build:production"
+          }
+        }
+      }
+    }
+  },
+  "dependencies": {
+    "@nestjs/bullmq": "^11.0.5",
+    "@nestjs/common": "^11.0.0",
+    "@nestjs/core": "^11.0.0",
+    "@org/models": "workspace:*",
+    "@prisma/adapter-pg": "^7.9.1",
+    "@prisma/client": "^7.9.1",
+    "bullmq": "^6.1.1",
+    "ioredis": "^6.0.0",
+    "pg": "^8.23.0",
+    "reflect-metadata": "^0.2.0",
+    "rxjs": "^7.8.0",
+    "tslib": "^2.3.0"
+  },
+  "devDependencies": {
+    "@nestjs/testing": "^11.0.0",
+    "esbuild-decorators": "^1.0.0"
+  }
+}

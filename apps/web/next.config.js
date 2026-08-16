@@ -1,9 +1,20 @@
 //@ts-check
 
+const backendProxyTarget =
+  process.env.BACKEND_URL ||
+  process.env.NEXT_PUBLIC_BACKEND_URL ||
+  'http://localhost:8000';
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Next.js options go here
-  // See: https://nextjs.org/docs/app/api-reference/config/next-config-js
+  async rewrites() {
+    return [
+      {
+        source: '/api/auth/:path*',
+        destination: `${backendProxyTarget}/api/auth/:path*`,
+      },
+    ];
+  },
 };
 
 module.exports = nextConfig;

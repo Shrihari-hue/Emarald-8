@@ -1,108 +1,120 @@
-# New Nx Repository
+# Emarald-8
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+Nx workspace (`pnpm@11.22.0`): Nest API, Next apps, shared Prisma models.
 
-✨ Your new, shiny [Nx workspace](https://nx.dev) is ready ✨.
+| App / lib | Package                | Default URL                                                   |
+| --------- | ---------------------- | ------------------------------------------------------------- |
+| Backend   | `@org/backend`         | http://localhost:8000/api                                     |
+| Auth      | Better Auth on the API | http://localhost:8000/api/auth/ok                             |
+| Web       | `@org/web`             | http://localhost:3000 (`/api/auth/*` rewrites to the backend) |
+| Marketing | `@org/marketing`       | http://localhost:3001                                         |
+| Models    | `@org/models`          | Prisma schema in `packages/models/prisma`                     |
 
-[Learn more about this workspace setup and its capabilities](https://nx.dev/docs/technologies/typescript/introduction?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or run `pnpm nx graph` to visually explore what was created. Now, let's get you up to speed!
-🚀 If you haven't connected to Nx Cloud yet, [complete your setup here](https://cloud.nx.app/get-started). Get faster builds with remote caching, distributed task execution, and self-healing CI. [See how your workspace can benefit](#nx-cloud).
+Prefix every Nx command with `pnpm`.
 
-## Generate a library
-
-```sh
-pnpm nx g @nx/js:lib packages/pkg1 --publishable --importPath=@my-org/pkg1
-```
-
-## Run tasks
-
-To build the library use:
+## Setup
 
 ```sh
-pnpm nx run pkg1:build
+pnpm install
+cp .env.example .env
 ```
 
-To run any task with Nx use:
+Set `BETTER_AUTH_SECRET` (32+ characters):
 
 ```sh
-pnpm nx run <project-name>:<target>
+openssl rand -base64 32
 ```
 
-These targets are either [inferred automatically](https://nx.dev/docs/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
+`.env` is gitignored. Required keys are in `.env.example`.
 
-[More about running tasks in the docs &raquo;](https://nx.dev/docs/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+Postgres must be reachable at `DATABASE_URL` (default `postgresql://postgres:postgres@localhost:5432/emarald`).
 
-## Versioning and releasing
-
-To version and release the library use
-
-```
-pnpm nx release
-```
-
-Pass `--dry-run` to see what would happen without actually releasing the library.
-
-[Learn more about Nx release &raquo;](https://nx.dev/docs/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Keep TypeScript project references up to date
-
-Nx automatically updates TypeScript [project references](https://www.typescriptlang.org/docs/handbook/project-references.html) in `tsconfig.json` files to ensure they remain accurate based on your project dependencies (`import` or `require` statements). This sync is automatically done when running tasks such as `build` or `typecheck`, which require updated references to function correctly.
-
-To manually trigger the process to sync the project graph dependencies information to the TypeScript project references, run the following command:
+## Prisma (`@org/models`)
 
 ```sh
+pnpm nx run @org/models:prisma -c generate
+pnpm nx run @org/models:prisma -c migrate:dev -- --name <migration_name>
+pnpm nx run @org/models:prisma -c migrate:deploy
+pnpm nx run @org/models:prisma -c migrate:reset
+pnpm nx run @org/models:prisma -c migrate:resolve
+pnpm nx run @org/models:prisma -c studio
+```
+
+Equivalent filter scripts:
+
+```sh
+pnpm --filter @org/models prisma:generate
+pnpm --filter @org/models prisma:migrate:dev
+pnpm --filter @org/models prisma:migrate:deploy
+pnpm --filter @org/models prisma:migrate:reset
+pnpm --filter @org/models prisma:migrate:resolve
+pnpm --filter @org/models prisma:studio
+```
+
+## Develop
+
+```sh
+pnpm nx serve @org/backend
+pnpm nx serve @org/backend --configuration=development
+pnpm nx serve @org/backend --configuration=production
+
+pnpm nx dev @org/web
+pnpm nx start @org/web
+pnpm nx serve-static @org/web
+
+pnpm nx dev @org/marketing
+pnpm nx start @org/marketing
+pnpm nx serve-static @org/marketing
+```
+
+`pnpm nx dev @org/web` also starts `@org/backend:serve`.
+
+Auth health check (API running):
+
+```sh
+curl http://localhost:8000/api/auth/ok
+```
+
+## Build, lint, test, format
+
+```sh
+pnpm nx build @org/backend
+pnpm nx build @org/web
+pnpm nx build @org/marketing
+pnpm nx run-many -t build
+
+pnpm nx typecheck @org/backend
+pnpm nx typecheck @org/models
+pnpm nx run-many -t typecheck
+
+pnpm nx lint @org/backend
+pnpm nx test @org/backend
+pnpm nx run-many -t lint test build typecheck
+
+pnpm nx format:check
+pnpm nx format:write
+```
+
+e2e (not run in CI yet):
+
+```sh
+pnpm nx e2e @org/backend-e2e
+pnpm nx e2e @org/web-e2e
+pnpm nx e2e @org/marketing-e2e
+pnpm nx run-many -t e2e
+```
+
+## Workspace
+
+```sh
+pnpm nx graph
+pnpm nx show projects
+pnpm nx show project @org/backend
 pnpm nx sync
-```
-
-You can enforce that the TypeScript project references are always in the correct state when running in CI by adding a step to your CI job configuration that runs the following command:
-
-```sh
 pnpm nx sync:check
+pnpm nx affected -t build --base=main --head=HEAD
 ```
 
-[Learn more about nx sync](https://nx.dev/reference/nx-commands#sync)
+## Nx
 
-## Nx Cloud
-
-Nx Cloud ensures a [fast and scalable CI](https://nx.dev/nx-cloud?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) pipeline. It includes features such as:
-
-- [Remote caching](https://nx.dev/docs/features/ci-features/remote-cache?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task distribution across multiple machines](https://nx.dev/docs/features/ci-features/distribute-task-execution?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Automated e2e test splitting](https://nx.dev/docs/features/ci-features/split-e2e-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task flakiness detection and rerunning](https://nx.dev/docs/features/ci-features/flaky-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-### Set up CI (non-Github Actions CI)
-
-**Note:** This is only required if your CI provider is not GitHub Actions.
-
-Use the following command to configure a CI workflow for your workspace:
-
-```sh
-pnpm nx g ci-workflow
-```
-
-[Learn more about Nx on CI](https://nx.dev/docs/features/ci-features?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Install Nx Console
-
-Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
-
-[Install Nx Console &raquo;](https://nx.dev/docs/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## 🔗 Learn More
-
-- [Nx Documentation](https://nx.dev/docs)
-- [Crafting Your Workspace Tutorial](https://nx.dev/docs/getting-started/tutorials/crafting-your-workspace)
-- [Module Boundaries](https://nx.dev/docs/features/enforce-module-boundaries)
-- [Releasing Packages](https://nx.dev/docs/features/manage-releases)
-- [Nx Plugins](https://nx.dev/docs/concepts/nx-plugins)
-- [Nx Cloud](https://nx.dev/nx-cloud)
-
-## 💬 Community
-
-Join the Nx community:
-
-- [Discord](https://go.nx.dev/community)
-- [X (Twitter)](https://twitter.com/nxdevtools)
-- [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [YouTube](https://www.youtube.com/@nxdevtools)
-- [Blog](https://nx.dev/blog)
+[Nx docs](https://nx.dev/docs). [Nx Console](https://nx.dev/docs/getting-started/editor-setup).

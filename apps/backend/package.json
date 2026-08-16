@@ -2,26 +2,62 @@
   "name": "@org/backend",
   "version": "0.0.1",
   "private": true,
+  "type": "module",
   "nx": {
+    "tags": [
+      "scope:backend",
+      "type:app"
+    ],
     "targets": {
       "build": {
-        "executor": "nx:run-commands",
         "dependsOn": [
           "^build"
         ],
+        "executor": "@nx/esbuild:esbuild",
+        "outputs": [
+          "{options.outputPath}"
+        ],
         "options": {
-          "command": "webpack-cli build",
-          "env": {
-            "NODE_ENV": "production"
-          },
-          "cwd": "apps/backend"
+          "outputPath": "apps/backend/dist",
+          "main": "apps/backend/src/main.ts",
+          "tsConfig": "apps/backend/tsconfig.app.json",
+          "assets": [
+            "apps/backend/src/assets",
+            {
+              "input": "apps/backend",
+              "glob": "package.json",
+              "output": "."
+            }
+          ],
+          "platform": "node",
+          "bundle": true,
+          "format": [
+            "esm"
+          ],
+          "esbuildConfig": "apps/backend/esbuild.config.cjs"
         },
         "configurations": {
           "development": {
-            "env": {
-              "NODE_ENV": "development"
+            "minify": false,
+            "sourcemap": true
+          },
+          "production": {
+            "minify": true,
+            "sourcemap": false,
+            "esbuildOptions": {
+              "keepNames": true
             }
           }
+        }
+      },
+      "typecheck": {
+        "dependsOn": [
+          "^typecheck"
+        ],
+        "executor": "nx:run-commands",
+        "options": {
+          "command": "tsc --noEmit -p tsconfig.app.json",
+          "cwd": "apps/backend"
         }
       },
       "prune-lockfile": {
@@ -58,6 +94,14 @@
         ],
         "executor": "nx:noop"
       },
+      "test": {
+        "dependsOn": [
+          "^build"
+        ],
+        "options": {
+          "passWithNoTests": true
+        }
+      },
       "serve": {
         "continuous": true,
         "executor": "@nx/js:node",
@@ -85,11 +129,17 @@
     "@nestjs/core": "^11.0.0",
     "@nestjs/platform-express": "^11.0.0",
     "@org/models": "workspace:*",
+    "@prisma/adapter-pg": "^7.9.1",
+    "@prisma/client": "^7.9.1",
+    "@thallesp/nestjs-better-auth": "^2.7.0",
+    "better-auth": "^1.6.29",
+    "pg": "^8.23.0",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.0",
     "tslib": "^2.3.0"
   },
   "devDependencies": {
-    "@nestjs/testing": "^11.0.0"
+    "@nestjs/testing": "^11.0.0",
+    "esbuild-decorators": "^1.0.0"
   }
 }

@@ -4,24 +4,33 @@
   "private": true,
   "nx": {
     "targets": {
+      "build": {
+        "dependsOn": [
+          "^build"
+        ]
+      },
       "dev": {
+        "dependsOn": [
+          "@org/backend:serve"
+        ],
+        "continuous": true,
         "options": {
           "args": [
-            "--port=4200"
+            "--port=3000"
           ]
         }
       },
       "start": {
         "options": {
           "args": [
-            "--port=4200"
+            "--port=3000"
           ]
         }
       },
       "serve-static": {
         "options": {
           "args": [
-            "--port=4200"
+            "--port=3000"
           ]
         }
       }

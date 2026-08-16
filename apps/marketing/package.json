@@ -4,24 +4,29 @@
   "private": true,
   "nx": {
     "targets": {
+      "build": {
+        "dependsOn": [
+          "^build"
+        ]
+      },
       "dev": {
         "options": {
           "args": [
-            "--port=4300"
+            "--port=3001"
           ]
         }
       },
       "start": {
         "options": {
           "args": [
-            "--port=4300"
+            "--port=3001"
           ]
         }
       },
       "serve-static": {
         "options": {
           "args": [
-            "--port=4300"
+            "--port=3001"
           ]
         }
       }

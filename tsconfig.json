@@ -20,6 +20,9 @@
     },
     {
       "path": "./apps/marketing"
+    },
+    {
+      "path": "./packages/models"
     }
   ],
   "compilerOptions": {}

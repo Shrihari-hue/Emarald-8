@@ -4,9 +4,11 @@ packages:
 
 allowBuilds:
   '@parcel/watcher': true
+  '@prisma/engines': true
   '@swc/core': true
   less: true
   nx: true
+  prisma: true
   sharp: true
   unrs-resolver: true
 

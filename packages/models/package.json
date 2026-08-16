@@ -1,0 +1,91 @@
+{
+  "name": "@org/models",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "prisma:generate": "nx run @org/models:prisma -c generate",
+    "prisma:migrate:dev": "nx run @org/models:prisma -c migrate:dev",
+    "prisma:migrate:deploy": "nx run @org/models:prisma -c migrate:deploy",
+    "prisma:migrate:reset": "nx run @org/models:prisma -c migrate:reset",
+    "prisma:migrate:resolve": "nx run @org/models:prisma -c migrate:resolve",
+    "prisma:studio": "nx run @org/models:prisma -c studio"
+  },
+  "nx": {
+    "tags": [
+      "scope:models",
+      "type:lib"
+    ],
+    "targets": {
+      "build": {
+        "dependsOn": [
+          "prisma-generate"
+        ],
+        "executor": "nx:noop"
+      },
+      "typecheck": {
+        "dependsOn": [
+          "prisma-generate",
+          "^typecheck"
+        ]
+      },
+      "prisma": {
+        "executor": "nx:run-commands",
+        "options": {
+          "cwd": "packages/models"
+        },
+        "configurations": {
+          "generate": {
+            "command": "prisma generate --schema prisma"
+          },
+          "migrate:dev": {
+            "command": "prisma migrate dev --schema prisma"
+          },
+          "migrate:deploy": {
+            "command": "prisma migrate deploy --schema prisma"
+          },
+          "migrate:reset": {
+            "command": "prisma migrate reset --schema prisma"
+          },
+          "migrate:resolve": {
+            "command": "prisma migrate resolve --schema prisma"
+          },
+          "studio": {
+            "command": "prisma studio --schema prisma"
+          }
+        }
+      },
+      "prisma-generate": {
+        "executor": "nx:run-commands",
+        "cache": true,
+        "options": {
+          "cwd": "packages/models",
+          "command": "prisma generate --schema prisma"
+        }
+      }
+    }
+  },
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./src/index.ts",
+      "@org/source": "./src/index.ts",
+      "import": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "dependencies": {
+    "@nestjs/common": "^11.2.1",
+    "@prisma/adapter-pg": "^7.9.1",
+    "@prisma/client": "^7.9.1",
+    "pg": "^8.23.0",
+    "prisma": "^7.9.1",
+    "tslib": "^2.3.0"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.21.0",
+    "dotenv": "^17.4.2"
+  }
+}

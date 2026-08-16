@@ -23,6 +23,9 @@
     },
     {
       "path": "./packages/models"
+    },
+    {
+      "path": "./apps/worker"
     }
   ],
   "compilerOptions": {}
